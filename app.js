@@ -86,6 +86,7 @@ const GLUOS_DATA = {
     {id: 6, texto: "Indeferimento de Processo"},
     {id: 7, texto: "Passo (outros setores)"},
     {id: 8, texto: "Tranferido"},
+    {id: 9, texto: "Visita de vistoria"},
   ]
 };
 
