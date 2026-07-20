@@ -62,7 +62,7 @@ const USER_EMAIL_MAPPING = {
   "Marcella": "marcella@hotmail.com",
   "Lúcia": "lucia@hotmail.com",
   "Fernanda": "fernanda@hotmail.com",
-  "João": "joão@hotmail.com",
+  "João": "joao@hotmail.com",
   "Admin": "seplan.gluos@valadares.mg.gov.br"
 };
 
