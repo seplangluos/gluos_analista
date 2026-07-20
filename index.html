@@ -40,6 +40,7 @@
                                 <option value="Maysa" style="color: black;">Maysa</option>
                                 <option value="Marcella" style="color: black;">Marcella</option>
                                 <option value="Lúcia" style="color: black;">Lúcia</option>
+                                <option value="Fernanda" style="color: black;">Fernanda</option>
                                 <option value="Admin" style="color: black;">Admin</option>
                             </select>
                         </div>
@@ -91,10 +92,6 @@
                         <span>📝</span>
                         Novo
                     </button>
-                    <button id="multiple-entries-btn" class="btn btn--success btn--lg">
-                        <span>📝📝</span>
-                        Novos
-                    </button>
                     <button id="bulk-entries-btn" class="btn btn--success btn--lg">
                         <span>📝📋</span>
                         Vários Novos
@@ -130,7 +127,7 @@
                         <div>
                             <h5 style="color: var(--color-success); margin-bottom: var(--space-8);">📝 Cadastro de Processos</h5>
                             <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-                                Use <strong>Novo</strong> para uma entrada simples, <strong>Novos</strong> não utilizar (desatualizado), <strong>Vários Novos</strong> para gerar formulários de um mesmo assunto para vários processos, ou <strong>Novos: vários assuntos</strong> para gerar vários assuntos para o mesmo processo.
+                                Use <strong>Novo</strong> para uma entrada simples, <strong>Vários Novos</strong> para gerar formulários de um mesmo assunto para vários processos, ou <strong>Novo: Vários assuntos</strong> para gerar vários assuntos para o mesmo processo.
                             </p>
                         </div>
                         <div>
@@ -142,7 +139,7 @@
                         <div>
                             <h5 style="color: var(--color-warning); margin-bottom: var(--space-8);">📋 Autopreenchimento Inteligente</h5>
                             <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-                                Ao digitar o número de um processo existente nos campos de cadastro, o sistema buscará automaticamente o <em>Contribuinte</em> e o <em>CTM</em> na base de dados da GLUOS.
+                                Ao digitar o número de um processo existente nos campos de cadastro, o sistema buscará automaticamente o <em>Assunto Processo</em>, o <em>Contribuinte</em> e o <em>CTM</em> na base de dados da GLUOS.
                             </p>
                         </div>
                     </div>
@@ -182,6 +179,11 @@
                             <label for="process-number" class="form-label">Nº Processo/Protocolo: *</label>
                             <input type="text" id="process-number" class="form-control" placeholder="informe número do processo ou protocolo, ou digite 0" required>
                         </div>
+
+                        <div class="form-group">
+                            <label for="assunto-processo" class="form-label">Assunto Processo:</label>
+                            <input type="text" id="assunto-processo" class="form-control" placeholder="Assunto do processo">
+                        </div>
                         
                         <div class="form-group">
                             <label for="contributor" class="form-label">Contribuinte:</label>
@@ -199,8 +201,8 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="habite-number" class="form-label">Número do Habite-se/Alvará:</label>
-                            <input type="text" id="habite-number" class="form-control" placeholder="Número do Habite-se/Alvará">
+                            <label for="prazo" class="form-label">Prazo (em dias):</label>
+                            <input type="number" id="prazo" class="form-control" placeholder="Preenchimento opcional">
                         </div>
                         
                         <div class="form-group">
@@ -220,54 +222,6 @@
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela de Múltiplas Entradas -->
-    <div id="multiple-entries-screen" class="screen">
-        <div class="screen-header">
-            <div class="container">
-                <div class="header-content">
-                    <h2>Múltiplas Entradas</h2>
-                    <button id="back-to-dashboard-2" class="btn btn--outline">Voltar</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="container">
-            <div class="form-container">
-                <div class="card">
-                    <div class="card__body">
-                        <h3>1. Escolha o assunto comum:</h3>
-                        <div class="form-group">
-                            <label for="multi-subject-number" class="form-label">Número do Assunto (1-50):</label>
-                            <input type="number" id="multi-subject-number" class="form-control" min="1" max="50" placeholder="Digite o número do assunto">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="multi-subject-select" class="form-label">Ou selecione o assunto: *</label>
-                            <select id="multi-subject-select" class="form-control" required>
-                                <option value="">-- Selecione o assunto --</option>
-                            </select>
-                        </div>
-                        
-                        <button type="button" id="set-subject-btn" class="btn btn--primary">Definir Assunto</button>
-                    </div>
-                </div>
-                
-                <div id="multiple-forms-container" class="hidden">
-                    <div class="selected-subject-info card">
-                        <div class="card__body">
-                            <h4>Assunto selecionado:</h4>
-                            <p id="selected-subject-text"></p>
-                            <button type="button" id="add-process-btn" class="btn btn--secondary">Adicionar Processo</button>
-                            <button type="button" id="save-all-btn" class="btn btn--success">Salvar Todas as Entradas</button>
-                        </div>
-                    </div>
-                    
-                    <div id="processes-container"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -450,8 +404,6 @@
         </div>
     </div>
 
-    <!-- Tela de Relatórios -->
-    
     <!-- Tela Vários Novos -->
     <div id="bulk-entries-screen" class="screen">
         <div class="screen-content">
@@ -512,6 +464,7 @@
         </div>
     </div>
 
+    <!-- Tela de Relatórios -->
     <div id="report-screen" class="screen">
         <div class="screen-header">
             <div class="container">
@@ -664,6 +617,11 @@
                         <label for="edit-process-number" class="form-label">Nº Processo/Protocolo: *</label>
                         <input type="text" id="edit-process-number" class="form-control" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="edit-assunto-processo" class="form-label">Assunto Processo:</label>
+                        <input type="text" id="edit-assunto-processo" class="form-control">
+                    </div>
                     
                     <div class="form-group">
                         <label for="edit-contributor" class="form-label">Contribuinte:</label>
@@ -681,8 +639,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit-habite-number" class="form-label">Número do Habite-se/Alvará:</label>
-                        <input type="text" id="edit-habite-number" class="form-control">
+                        <label for="edit-prazo" class="form-label">Prazo (em dias):</label>
+                        <input type="number" id="edit-prazo" class="form-control">
                     </div>
                     
                     <div class="form-group">
@@ -716,8 +674,6 @@
         </div>
     </div>
 
-    <script type="module" src="app.js"></script>
-
     <!-- Tela de Novo: Vários assuntos -->
     <div id="multi-subject-entries-screen" class="screen">
         <div class="screen-header">
@@ -744,6 +700,12 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="multi-assunto-processo" class="form-label">Assunto Processo</label>
+                                <input type="text" id="multi-assunto-processo" class="form-control" 
+                                       placeholder="Assunto do processo">
+                            </div>
+
+                            <div class="form-group">
                                 <label for="multi-contributor" class="form-label">Contribuinte</label>
                                 <input type="text" id="multi-contributor" class="form-control" 
                                        placeholder="Nome do contribuinte">
@@ -762,9 +724,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="multi-habite-number" class="form-label">Número do Habite-se/Alvará</label>
-                                <input type="text" id="multi-habite-number" class="form-control" 
-                                       placeholder="Número do Habite-se/Alvará">
+                                <label for="multi-prazo" class="form-label">Prazo (em dias):</label>
+                                <input type="number" id="multi-prazo" class="form-control" 
+                                       placeholder="Preenchimento opcional">
                             </div>
 
                             <div class="form-group">
@@ -884,5 +846,7 @@
             </div>
         </div>
     </div>
-    </body>
+    
+    <script type="module" src="app.js"></script>
+</body>
 </html>
