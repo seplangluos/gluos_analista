@@ -61,7 +61,6 @@ const USER_EMAIL_MAPPING = {
   "Maysa": "maysa@hotmail.com",
   "Marcella": "marcella@hotmail.com",
   "Lúcia": "lucia@hotmail.com",
-  "Fernanda": "fernanda@hotmail.com",
   "Admin": "seplan.gluos@valadares.mg.gov.br"
 };
 
@@ -77,7 +76,7 @@ function emailToUsername(email) {
 
 // Dados da aplicação
 const GLUOS_DATA = {
-  usuarios: ["Pedro", "Rogério", "Isadora", "Andreza", "Hélica", "Juliana", "Frederico", "Gabriella", "Renata", "Ana Luiza", "Maysa", "Marcella", "Lúcia", "Fernanda", "Admin"],
+  usuarios: ["Pedro", "Rogério", "Isadora", "Andreza", "Hélica", "Juliana", "Frederico", "Gabriella", "Renata", "Ana Luiza", "Maysa", "Marcella", "Lúcia", "Admin"],
   assuntos: [
     {id: 1, texto: "Deferimento de Processo"},
     {id: 2, texto: "Notificação de processo"},
@@ -968,7 +967,7 @@ function displaySearchResults(entries) {
     tableBody.innerHTML = '';
     
     if (entries.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="8" class="text-center">Nenhum resultado encontrado.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="10" class="text-center">Nenhum resultado encontrado.</td></tr>`;
     } else {
         entries.forEach(entry => {
             const row = document.createElement('tr');
@@ -978,8 +977,10 @@ function displaySearchResults(entries) {
                 <td>${entry.server || '-'}</td>
                 <td>${entry.processNumber || '-'}</td>
                 <td title="${entry.subjectText || '-'}">${truncateText(entry.subjectText || '-', 30)}</td>
+                <td title="${entry.assuntoProcesso || '-'}">${truncateText(entry.assuntoProcesso || '-', 30)}</td>
                 <td>${entry.contributor || '-'}</td>
                 <td>${entry.ctm || '-'}</td>
+                <td>${entry.prazo || '-'}</td>
                 <td title="${entry.observation || '-'}">${truncateText(entry.observation || '-', 40)}</td>
             `;
             tableBody.appendChild(row);
@@ -1011,7 +1012,7 @@ function loadDatabaseTable(entries = null) {
 
     if (entriesToShow.length === 0) {
         const tableBody = document.querySelector('#database-table tbody');
-        if (tableBody) tableBody.innerHTML = `<tr><td colspan="9" class="text-center">Nenhum registro encontrado.</td></tr>`;
+        if (tableBody) tableBody.innerHTML = `<tr><td colspan="11" class="text-center">Nenhum registro encontrado.</td></tr>`;
         hidePaginationControls();
         return;
     }
@@ -1076,8 +1077,10 @@ function displayCurrentPage() {
             <td>${entry.server || '-'}</td>
             <td>${entry.processNumber || '-'}</td>
             <td title="${entry.subjectText || '-'}">${truncateText(entry.subjectText || '-', 30)}</td>
+            <td title="${entry.assuntoProcesso || '-'}">${truncateText(entry.assuntoProcesso || '-', 30)}</td>
             <td>${entry.contributor || '-'}</td>
             <td>${entry.ctm || '-'}</td>
+            <td>${entry.prazo || '-'}</td>
             <td title="${entry.observation || '-'}">${truncateText(entry.observation || '-', 40)}</td>
             <td>${actionsHtml}</td>
         `;
