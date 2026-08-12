@@ -237,9 +237,7 @@ function setupEventListeners() {
 }
 
 function setupMainNavigation() {
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-  
+  // Navegação pelos botões do Dashboard
   const navButtons = [
     { id: 'new-entry-btn', screen: 'new-entry' },
     { id: 'bulk-entries-btn', screen: 'bulk-entries' },
@@ -260,18 +258,43 @@ function setupMainNavigation() {
       });
     }
   });
-  
-  const backButtons = [
-    'back-to-dashboard-1', 'back-to-dashboard-3', 
-    'back-to-dashboard-4', 'back-to-dashboard-5',
-    'back-to-dashboard-6', 'back-to-dashboard-7',
-    'back-to-dashboard-prazos'
-  ];
-  
-  backButtons.forEach(btnId => {
-    const btn = document.getElementById(btnId);
-    if (btn) btn.addEventListener('click', () => showScreen('dashboard'));
+
+  // Navegação pelos links da Sidebar (Menu Lateral)
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = this.getAttribute('data-target');
+      if (target) {
+        showScreen(target);
+        if (target === 'database') loadDatabaseTable();
+        if (target === 'prazos') initPrazosScreen();
+      }
+    });
   });
+
+  // Toggle do menu mobile
+  document.querySelectorAll('.mobile-menu-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.add('mobile-open');
+    });
+  });
+
+  const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+  if (closeSidebarBtn) {
+    closeSidebarBtn.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+    });
+  }
+
+  // Ações do rodapé da Sidebar
+  const sidebarProfileBtn = document.getElementById('sidebar-profile-btn');
+  if (sidebarProfileBtn) sidebarProfileBtn.addEventListener('click', showProfileModal);
+
+  const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
+  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', handleLogout);
+
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 }
 
 async function handleLogin(e) {
@@ -310,6 +333,12 @@ async function handleLogin(e) {
     userSelect.value = '';
     passwordInput.value = '';
 
+    // Revela a sidebar e aplica padding ao body
+    document.getElementById('sidebar').classList.remove('hidden');
+    document.body.classList.add('has-sidebar');
+    const sidebarUserName = document.getElementById('sidebar-user-name');
+    if(sidebarUserName) sidebarUserName.textContent = currentUser;
+
     showScreen('dashboard');
 
   } catch (error) {
@@ -336,6 +365,12 @@ function showLoginError(message) {
 function handleLogout() {
   currentUser = null;
   updateUserInfo();
+  
+  // Esconde a sidebar e retira padding
+  document.getElementById('sidebar').classList.add('hidden');
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.body.classList.remove('has-sidebar');
+  
   showScreen('login');
 }
 
@@ -503,10 +538,12 @@ function handleGenerateBulkForms() {
     const container = document.getElementById('bulk-forms-container');
     const subjectText = document.getElementById('bulk-selected-subject-text');
     const processesContainer = document.getElementById('bulk-processes-container');
+    const selectionSection = document.getElementById('bulk-selection-section'); // Seção inicial
 
     if (container && subjectText && processesContainer && assunto) {
         subjectText.textContent = assunto.texto;
         container.classList.remove('hidden');
+        if (selectionSection) selectionSection.classList.add('hidden'); // Oculta
         processesContainer.innerHTML = '';
 
         for (let i = 1; i <= quantity; i++) {
@@ -725,8 +762,10 @@ async function handleSaveAllBulkEntries() {
 function handleResetBulkForms() {
     const container = document.getElementById('bulk-forms-container');
     const processesContainer = document.getElementById('bulk-processes-container');
-
+    const selectionSection = document.getElementById('bulk-selection-section'); 
+    
     if (container) container.classList.add('hidden');
+    if (selectionSection) selectionSection.classList.remove('hidden'); 
     if (processesContainer) processesContainer.innerHTML = '';
 
     document.getElementById('bulk-subject-number').value = '';
@@ -985,7 +1024,7 @@ function displaySearchResults(entries) {
                 <td>${entry.contributor || '-'}</td>
                 <td>${entry.ctm || '-'}</td>
                 <td>${entry.prazo || '-'}</td>
-                <td title="${entry.observation || '-'}">${truncateText(entry.observation || '-', 40)}</td>
+                <td class="obs-cell">${entry.observation || '-'}</td>
             `;
             tableBody.appendChild(row);
         });
@@ -1641,6 +1680,15 @@ function showScreen(screenName) {
             currentReportType = null;
         }
     }
+
+    // Atualiza o link ativo da Sidebar
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    const activeLink = document.querySelector(`.nav-link[data-target="${screenName}"]`);
+    if (activeLink) activeLink.classList.add('active');
+
+    // Esconde o menu no mobile ao clicar em um link
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('mobile-open');
 }
 
 function updateUserInfo() {
