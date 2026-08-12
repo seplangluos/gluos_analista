@@ -2881,3 +2881,24 @@ background: rgba(var(--color-success-rgb), 0.05);
 min-height: 60px;
 resize: vertical;
 }
+/* Adições para a Tabela de Prazos - Ordenação */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: var(--space-20);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+th.sortable:hover {
+    background-color: var(--color-bg-4);
+}
+
+th.sortable::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+}

@@ -101,6 +101,11 @@
                         <span>📑</span>
                         Novo: Vários assuntos
                     </button>
+                    <!-- Novo Botão de Prazos -->
+                    <button id="prazos-btn" class="btn btn--warning btn--lg">
+                        <span>⏰</span>
+                        Prazos
+                    </button>
                     <button id="search-btn" class="btn btn--primary btn--lg">
                         <span>🔍</span>
                         Pesquisa
@@ -143,6 +148,73 @@
                                 Ao digitar o número de um processo existente nos campos de cadastro, o sistema buscará automaticamente o <em>Assunto Processo</em>, o <em>Contribuinte</em> e o <em>CTM</em> na base de dados da GLUOS.
                             </p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Prazos -->
+    <div id="prazos-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>Controle de Prazos</h2>
+                    <button id="back-to-dashboard-prazos" class="btn btn--outline">Voltar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="database-container">
+                <div class="filters-card card">
+                    <div class="card__body">
+                        <h3>Filtros</h3>
+                        <div class="filters-row">
+                            <div class="form-group">
+                                <label for="prazos-filter-server" class="form-label">Analista:</label>
+                                <select id="prazos-filter-server" class="form-control">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prazos-filter-tipo" class="form-label">Tipo de Processo:</label>
+                                <select id="prazos-filter-tipo" class="form-control">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prazos-filter-data" class="form-label">Data Final do Prazo:</label>
+                                <input type="date" id="prazos-filter-data" class="form-control">
+                            </div>
+                        </div>
+                        <button type="button" id="apply-prazos-filters" class="btn btn--primary">Aplicar Filtros</button>
+                        <button type="button" id="clear-prazos-filters" class="btn btn--outline">Limpar Filtros</button>
+                    </div>
+                </div>
+                
+                <div class="database-results card">
+                    <div class="results-header">
+                        <h3>Processos para indeferir</h3>
+                    </div>
+                    <div class="table-container">
+                        <table id="prazos-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="date">Data (Entrada) ↕</th>
+                                    <th class="sortable" data-sort="server">Servidor ↕</th>
+                                    <th class="sortable" data-sort="processNumber">Nº Processo ↕</th>
+                                    <th class="sortable" data-sort="subjectText">Assunto ↕</th>
+                                    <th class="sortable" data-sort="assuntoProcesso">Assunto Processo ↕</th>
+                                    <th class="sortable" data-sort="contributor">Contribuinte ↕</th>
+                                    <th class="sortable" data-sort="ctm">CTM ↕</th>
+                                    <th class="sortable" data-sort="prazo">Prazo (Dias) ↕</th>
+                                    <th class="sortable" data-sort="diaFinal">Dia Final ↕</th>
+                                    <th class="sortable" data-sort="diasFim">Dias FIM ↕</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
