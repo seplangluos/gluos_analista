@@ -1227,13 +1227,9 @@ color: var(--color-text);
 margin-bottom: var(--space-16);
 }
 
-/* ========================================= */
-/* TABELAS E CABEÇALHO FIXO (STICKY HEADER)  */
-/* ========================================= */
+/* Tabelas */
 .table-container {
     overflow-x: auto;
-    overflow-y: auto;       
-    max-height: 65vh;       
 }
 
 .data-table {
@@ -1243,16 +1239,12 @@ margin-bottom: var(--space-16);
 }
 
 .data-table th {
-    position: sticky;       
-    top: 0;
-    z-index: 10;
-    background-color: var(--color-surface); 
+    background: var(--color-bg-3);
     color: var(--color-text);
     padding: var(--space-12) var(--space-8);
     text-align: left;
     font-weight: var(--font-weight-semibold);
-    border-bottom: 2px solid var(--color-border); 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);       
+    border-bottom: 1px solid var(--color-border);
     white-space: nowrap;
 }
 
