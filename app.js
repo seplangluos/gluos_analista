@@ -91,6 +91,8 @@ const GLUOS_DATA = {
     {id: 9, texto: "Visita de vistoria"},
     {id: 10, texto: "Conformidade/Antena"},
     {id: 11, texto: "Declarações"},
+    {id: 12, texto: "Análise de Viabilidade"},
+    {id: 13, texto: "Situação do imóvel"},
   ]
 };
 
