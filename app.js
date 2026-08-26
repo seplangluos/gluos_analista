@@ -93,6 +93,7 @@ const GLUOS_DATA = {
     {id: 11, texto: "Declarações"},
     {id: 12, texto: "Análise de Viabilidade"},
     {id: 13, texto: "Situação do imóvel"},
+    {id: 14, texto: "Atendimento"},
   ]
 };
 
@@ -1108,7 +1109,8 @@ function displayCurrentPage() {
 
     pageEntries.forEach(entry => {
         const row = document.createElement('tr');
-        const canEdit = entry.server === currentUser;
+        // AQUI HOUVE A ALTERAÇÃO: O Admin também pode visualizar os botões de edição de qualquer entrada.
+        const canEdit = entry.server === currentUser || currentUser === "Admin";
         const actionsHtml = canEdit ? `
             <div class="action-buttons">
                 <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
@@ -1255,14 +1257,23 @@ function setupPaginationEventListeners() {
 window.editEntry = function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) return alert('Entrada não encontrada.');
-    if (entry.server !== currentUser) return alert('Você só pode editar suas próprias entradas.');
+    
+    // AQUI HOUVE A ALTERAÇÃO: O Admin tem permissão para prosseguir independente do dono da entrada.
+    if (entry.server !== currentUser && currentUser !== "Admin") {
+        return alert('Você só pode editar suas próprias entradas.');
+    }
+    
     showEditModal(entry);
 };
 
 window.deleteEntry = async function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) return alert('Entrada não encontrada.');
-    if (entry.server !== currentUser) return alert('Você só pode excluir suas próprias entradas.');
+    
+    // AQUI HOUVE A ALTERAÇÃO: O Admin tem permissão para prosseguir independente do dono da entrada.
+    if (entry.server !== currentUser && currentUser !== "Admin") {
+        return alert('Você só pode excluir suas próprias entradas.');
+    }
     
     if (!confirm('Tem certeza que deseja excluir esta entrada?')) return;
     
