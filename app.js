@@ -83,7 +83,7 @@ const GLUOS_DATA = {
     {id: 1, texto: "Deferimento de Processo"},
     {id: 2, texto: "Notificação de processo"},
     {id: 3, texto: "Enc. a GCT/Topografia (passo)"},
-    {id: 4, texto: "Passo para Vistoria"},
+    {id: 4, texto: "Enc. Vistoria"},
     {id: 5, texto: "Atendimento (RT/Contribuinte)"},
     {id: 6, texto: "Indeferimento de Processo"},
     {id: 7, texto: "Passo (outros setores)"},
@@ -95,6 +95,7 @@ const GLUOS_DATA = {
     {id: 13, texto: "Situação do imóvel"},
     {id: 14, texto: "Atendimento"},
     {id: 15, texto: "Atendimento sem processo"},
+    {id: 16, texto: "Passo para Vistoria"},
   ]
 };
 
