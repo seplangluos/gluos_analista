@@ -1292,15 +1292,20 @@ function setupReports() {
     const personalBtn = document.getElementById('personal-report-btn');
     const completeBtn = document.getElementById('complete-report-btn');
     const generateBtn = document.getElementById('generate-report-btn');
+    const printCompleteBtn = document.getElementById('print-complete-report-btn');
     
     if (personalBtn) personalBtn.addEventListener('click', () => { currentReportType = 'personal'; showReportForm('Relatório Pessoal'); });
     if (completeBtn) completeBtn.addEventListener('click', () => { currentReportType = 'complete'; showReportForm('Relatório Completo'); });
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateReport);
+    if (printCompleteBtn) printCompleteBtn.addEventListener('click', printCompleteReportTable);
 }
 
 function showReportForm(title) {
     const form = document.getElementById('report-form');
     const formTitle = document.getElementById('report-form-title');
+    const printActions = document.getElementById('report-print-actions');
+
+    if (printActions) printActions.classList.add('hidden');
     
     if (form && formTitle) {
         formTitle.textContent = title;
@@ -1399,6 +1404,9 @@ function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
         document.getElementById('report-summary').classList.add('hidden');
     }
     
+    const printActions = document.getElementById('report-print-actions');
+    if (printActions) printActions.classList.add('hidden');
+
     document.getElementById('report-results').classList.remove('hidden');
 }
 
@@ -1487,9 +1495,139 @@ function displayCompleteReport(reportData, userTotals, grandTotal, startDate, en
     
     const reportTable = document.getElementById('report-table');
     if (reportTable) reportTable.classList.add('admin-report-table');
+
+    const printActions = document.getElementById('report-print-actions');
+    if (printActions) printActions.classList.remove('hidden');
     
     document.getElementById('report-results').classList.remove('hidden');
     document.getElementById('report-summary').classList.add('hidden');
+}
+
+function printCompleteReportTable() {
+    const reportTable = document.getElementById('report-table');
+
+    if (!reportTable || currentReportType !== 'complete') {
+        alert('Gere primeiro um Relatório Completo para imprimir.');
+        return;
+    }
+
+    const tableClone = reportTable.cloneNode(true);
+    tableClone.removeAttribute('id');
+    tableClone.className = 'print-report-table';
+
+    tableClone.querySelectorAll('th, td').forEach(cell => {
+        cell.style.minWidth = '';
+        cell.style.maxWidth = '';
+        cell.style.width = '';
+        cell.style.wordWrap = '';
+    });
+
+    const printWindow = window.open('', '_blank', 'width=1400,height=900');
+
+    if (!printWindow) {
+        alert('Não foi possível abrir a janela de impressão. Permita pop-ups para este sistema e tente novamente.');
+        return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <title>Relatório Completo - Impressão</title>
+            <style>
+                @page {
+                    size: A4 landscape;
+                    margin: 7mm;
+                }
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                    background: #ffffff;
+                    color: #000000;
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+
+                .print-area {
+                    width: 100%;
+                }
+
+                .print-report-table {
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    max-width: 100% !important;
+                    border-collapse: collapse;
+                    table-layout: fixed;
+                    font-size: 7.2pt;
+                }
+
+                .print-report-table th,
+                .print-report-table td {
+                    border: 0.2mm solid #555555;
+                    padding: 1.2mm 0.7mm;
+                    line-height: 1.15;
+                    vertical-align: middle;
+                    white-space: normal !important;
+                    overflow-wrap: anywhere;
+                    word-break: normal;
+                }
+
+                .print-report-table thead th {
+                    background: #e9ecef !important;
+                    font-weight: 700;
+                }
+
+                .print-report-table th:first-child,
+                .print-report-table td:first-child {
+                    width: 28%;
+                    text-align: left !important;
+                }
+
+                .print-report-table th:not(:first-child),
+                .print-report-table td:not(:first-child) {
+                    text-align: center !important;
+                }
+
+                .print-report-table tfoot th,
+                .print-report-table tfoot td {
+                    background: #f2f2f2 !important;
+                    font-weight: 700 !important;
+                    border-top: 0.4mm solid #000000;
+                }
+
+                .print-report-table thead {
+                    display: table-header-group;
+                }
+
+                .print-report-table tfoot {
+                    display: table-footer-group;
+                }
+
+                .print-report-table tr {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-area">${tableClone.outerHTML}</div>
+            <script>
+                window.onload = function() {
+                    window.onafterprint = function() { window.close(); };
+                    window.focus();
+                    setTimeout(function() { window.print(); }, 200);
+                };
+            <\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
 }
 
 
@@ -1684,8 +1822,10 @@ function showScreen(screenName) {
         if (screenName === 'report') {
             const reportForm = document.getElementById('report-form');
             const reportResults = document.getElementById('report-results');
+            const printActions = document.getElementById('report-print-actions');
             if (reportForm) reportForm.classList.add('hidden');
             if (reportResults) reportResults.classList.add('hidden');
+            if (printActions) printActions.classList.add('hidden');
             currentReportType = null;
         }
     }

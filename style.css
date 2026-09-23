@@ -1218,6 +1218,12 @@ color: var(--color-primary);
 margin-bottom: var(--space-20);
 }
 
+.report-print-actions {
+display: flex;
+justify-content: flex-end;
+margin-bottom: var(--space-12);
+}
+
 .report-summary {
 background: var(--color-bg-4);
 }
