@@ -48,11 +48,6 @@ try {
 
 // Mapeamento de usuários para emails
 const USER_EMAIL_MAPPING = {
-  "Pedro": "pedro@hotmail.com",
-  "Rogério": "rogerio@hotmail.com",
-  "Isadora": "isadora@hotmail.com",
-  "Andreza": "andreza@hotmail.com",
-  "Hélica": "helica@hotmail.com",
   "Juliana": "juliana@hotmail.com",
   "Frederico": "frederico@hotmail.com",
   "Gabriella": "gabriella@hotmail.com",
@@ -61,7 +56,6 @@ const USER_EMAIL_MAPPING = {
   "Maysa": "maysa@hotmail.com",
   "Marcella": "marcella@hotmail.com",
   "Lúcia": "lucia@hotmail.com",
-  "Fernanda": "fernanda@hotmail.com",
   "Andre": "andre@hotmail.com",
   "Admin": "seplan.gluos@valadares.mg.gov.br"
 };
@@ -78,7 +72,7 @@ function emailToUsername(email) {
 
 // Dados da aplicação
 const GLUOS_DATA = {
-  usuarios: ["Pedro", "Rogério", "Isadora", "Andreza", "Hélica", "Juliana", "Frederico", "Gabriella", "Renata", "Ana Luiza", "Maysa", "Marcella", "Lúcia", "Fernanda", "Andre", "Admin"],
+  usuarios: ["Juliana", "Frederico", "Gabriella", "Renata", "Ana Luiza", "Maysa", "Marcella", "Lúcia", "Andre", "Admin"],
   assuntos: [
     {id: 1, texto: "Deferimento de Processo"},
     {id: 2, texto: "Notificação de processo"},
