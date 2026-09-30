@@ -90,6 +90,8 @@ const GLUOS_DATA = {
     {id: 14, texto: "Atendimento"},
     {id: 15, texto: "Atendimento sem processo"},
     {id: 16, texto: "Passo para Vistoria"},
+	{id: 17, texto: "Encaminhado à Diretoria"},
+    {id: 18, texto: "Encaminhado à Gerência"},
   ]
 };
 
