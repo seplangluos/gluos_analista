@@ -2311,3 +2311,48 @@ pointer-events: auto;
 position: relative;
 z-index: 1;
 }
+
+/* Relatórios: ordenação e detalhamento por assunto */
+#report-table .report-sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+}
+#report-table .report-sort-button::after { content: '↕'; opacity: 0.6; }
+#report-table th[aria-sort="ascending"] .report-sort-button::after { content: '▲'; opacity: 1; }
+#report-table th[aria-sort="descending"] .report-sort-button::after { content: '▼'; opacity: 1; }
+#report-table .report-sort-button:focus-visible,
+#report-table .subject-report-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+#report-table .subject-report-row { cursor: pointer; }
+#report-table .subject-report-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-primary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+#report-table .subject-report-row:hover .subject-report-link { text-decoration: underline; }
+#subject-report-modal .subject-report-modal-content { max-width: 780px; }
+#subject-report-modal .subject-report-help {
+    margin-bottom: var(--space-16);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+#subject-monthly-table th:not(:first-child),
+#subject-monthly-table td:not(:first-child) { text-align: right; }
+#subject-monthly-table tfoot { background: var(--color-bg-3); font-weight: bold; }
+@media (min-width: 768px) {
+    #report-screen .report-buttons { grid-template-columns: repeat(3, 1fr); }
+}

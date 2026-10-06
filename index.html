@@ -602,6 +602,10 @@
                                 <span>📈</span>
                                 Relatório Completo
                             </button>
+                            <button id="subject-report-btn" class="btn btn--info btn--lg">
+                                <span>📋</span>
+                                Relatórios por Assunto
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -658,6 +662,32 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalhamento anual do relatório por assunto -->
+    <div id="subject-report-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="subject-report-modal-title">
+        <div class="modal-content subject-report-modal-content">
+            <div class="modal-header">
+                <h3 id="subject-report-modal-title">Relatório por Assunto</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="subject-report-year" class="form-label">Escolha o ano:</label>
+                    <select id="subject-report-year" class="form-control"></select>
+                </div>
+                <p class="subject-report-help">Dias úteis: datas com pelo menos uma entrada na base, independentemente do assunto. Média anual: total de entradas do assunto dividido pelos dias com entradas no ano.</p>
+                <div class="table-container">
+                    <table id="subject-monthly-table" class="data-table">
+                        <thead><tr><th>Mês</th><th>Entradas</th><th>Dias úteis</th><th>Média</th></tr></thead>
+                        <tbody id="subject-monthly-body"></tbody>
+                        <tfoot id="subject-monthly-foot"></tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-subject-report-modal" type="button" class="btn btn--primary">Fechar</button>
             </div>
         </div>
     </div>
