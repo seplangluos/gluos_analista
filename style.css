@@ -2356,3 +2356,9 @@ z-index: 1;
 @media (min-width: 768px) {
     #report-screen .report-buttons { grid-template-columns: repeat(3, 1fr); }
 }
+#prazo::placeholder {
+    font-size: 16px;
+    font-weight: 700;
+    color: #b45309;
+    opacity: 1;
+}
