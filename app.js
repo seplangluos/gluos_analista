@@ -58,10 +58,24 @@ const USER_EMAIL_MAPPING = {
   "Lúcia": "lucia@hotmail.com",
   "Andre": "andre@hotmail.com",
   "Matheus": "matheusamanciocosta@hotmail.com",
-  "Admin": "seplan.gluos@valadares.mg.gov.br"
-
+  "Admin": "seplan.gluos@valadares.mg.gov.br",
+  "Teste": "teste@valadares.mg.gov.br"
 
 };
+
+// =========================================================================
+// CONTROLE DE ACESSO GERAL (RELATÓRIO COMPLETO + BASE DE DADOS COMPLETA)
+// Adicione aqui os nomes exatos dos usuários que podem ver tudo
+// =========================================================================
+const COMPLETE_REPORT_ALLOWED_USERS = [
+  "Admin",
+  "Lúcia",
+  "Andre"
+];
+
+function hasCompleteReportAccess() {
+  return Boolean(currentUser && COMPLETE_REPORT_ALLOWED_USERS.includes(currentUser));
+}
 
 // Função para converter email para nome de usuário
 function emailToUsername(email) {
@@ -190,6 +204,12 @@ async function loadAllEntries() {
         allEntries = [];
       }
       updateRecordCount();
+
+      // Se a tela da Base de Dados estiver aberta, atualiza a tabela em tempo real respeitando a permissão
+      const databaseScreen = document.getElementById('database-screen');
+      if (databaseScreen && databaseScreen.classList.contains('active')) {
+        applyDatabaseFilters();
+      }
     });
   } catch (error) {
     console.error('Erro ao carregar entradas:', error);
@@ -333,6 +353,7 @@ async function handleLogin(e) {
     
     currentUser = user; 
     updateUserInfo();
+    configureDatabasePermissions();
 
     userSelect.value = '';
     passwordInput.value = '';
@@ -369,6 +390,7 @@ function showLoginError(message) {
 function handleLogout() {
   currentUser = null;
   updateUserInfo();
+  configureDatabasePermissions();
   
   // Esconde a sidebar e retira padding
   document.getElementById('sidebar').classList.add('hidden');
@@ -542,12 +564,12 @@ function handleGenerateBulkForms() {
     const container = document.getElementById('bulk-forms-container');
     const subjectText = document.getElementById('bulk-selected-subject-text');
     const processesContainer = document.getElementById('bulk-processes-container');
-    const selectionSection = document.getElementById('bulk-selection-section'); // Seção inicial
+    const selectionSection = document.getElementById('bulk-selection-section');
 
     if (container && subjectText && processesContainer && assunto) {
         subjectText.textContent = assunto.texto;
         container.classList.remove('hidden');
-        if (selectionSection) selectionSection.classList.add('hidden'); // Oculta
+        if (selectionSection) selectionSection.classList.add('hidden');
         processesContainer.innerHTML = '';
 
         for (let i = 1; i <= quantity; i++) {
@@ -1051,8 +1073,32 @@ function setupDatabase() {
     setupPaginationEventListeners();
 }
 
+// Configura o filtro de servidor na Base de Dados conforme a permissão do usuário
+function configureDatabasePermissions() {
+    const filterServer = document.getElementById('filter-server');
+    if (!filterServer) return;
+
+    if (!hasCompleteReportAccess() && currentUser) {
+        filterServer.value = currentUser;
+        filterServer.disabled = true;
+    } else {
+        filterServer.disabled = false;
+        filterServer.value = '';
+    }
+}
+
+// Retorna apenas as entradas que o usuário atual tem permissão de visualizar na Base de Dados
+function getPermittedDatabaseEntries() {
+    if (hasCompleteReportAccess()) {
+        return [...allEntries];
+    }
+    return allEntries.filter(entry => entry.server === currentUser);
+}
+
 function loadDatabaseTable(entries = null) {
-    const entriesToShow = entries || allEntries;
+    configureDatabasePermissions();
+    const baseEntries = getPermittedDatabaseEntries();
+    const entriesToShow = entries !== null ? entries : baseEntries;
 
     const totalRecords = document.getElementById('total-records');
     if (totalRecords) totalRecords.textContent = `${entriesToShow.length} registro(s)`;
@@ -1071,9 +1117,12 @@ function applyDatabaseFilters() {
     const subjectFilter = document.getElementById('filter-subject').value;
     const dateFilter = document.getElementById('filter-date').value;
     
-    let filteredEntries = [...allEntries];
+    // Parte sempre das entradas permitidas para o usuário logado
+    let filteredEntries = getPermittedDatabaseEntries();
     
-    if (serverFilter) filteredEntries = filteredEntries.filter(entry => entry.server === serverFilter);
+    if (hasCompleteReportAccess() && serverFilter) {
+        filteredEntries = filteredEntries.filter(entry => entry.server === serverFilter);
+    }
     if (subjectFilter) filteredEntries = filteredEntries.filter(entry => entry.subjectId === parseInt(subjectFilter));
     if (dateFilter) {
         const targetDate = new Date(dateFilter + 'T00:00:00').toLocaleDateString('pt-BR');
@@ -1083,7 +1132,11 @@ function applyDatabaseFilters() {
 }
 
 function clearDatabaseFilters() {
-    document.getElementById('filter-server').value = '';
+    if (hasCompleteReportAccess()) {
+        document.getElementById('filter-server').value = '';
+    } else if (currentUser) {
+        document.getElementById('filter-server').value = currentUser;
+    }
     document.getElementById('filter-subject').value = '';
     document.getElementById('filter-date').value = '';
     loadDatabaseTable();
@@ -1110,8 +1163,7 @@ function displayCurrentPage() {
 
     pageEntries.forEach(entry => {
         const row = document.createElement('tr');
-        // AQUI HOUVE A ALTERAÇÃO: O Admin também pode visualizar os botões de edição de qualquer entrada.
-        const canEdit = entry.server === currentUser || currentUser === "Admin";
+        const canEdit = entry.server === currentUser || hasCompleteReportAccess();
         const actionsHtml = canEdit ? `
             <div class="action-buttons">
                 <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
@@ -1259,8 +1311,7 @@ window.editEntry = function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) return alert('Entrada não encontrada.');
     
-    // AQUI HOUVE A ALTERAÇÃO: O Admin tem permissão para prosseguir independente do dono da entrada.
-    if (entry.server !== currentUser && currentUser !== "Admin") {
+    if (entry.server !== currentUser && !hasCompleteReportAccess()) {
         return alert('Você só pode editar suas próprias entradas.');
     }
     
@@ -1271,8 +1322,7 @@ window.deleteEntry = async function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) return alert('Entrada não encontrada.');
     
-    // AQUI HOUVE A ALTERAÇÃO: O Admin tem permissão para prosseguir independente do dono da entrada.
-    if (entry.server !== currentUser && currentUser !== "Admin") {
+    if (entry.server !== currentUser && !hasCompleteReportAccess()) {
         return alert('Você só pode excluir suas próprias entradas.');
     }
     
@@ -1301,7 +1351,16 @@ function setupReports() {
     const printCompleteBtn = document.getElementById('print-complete-report-btn');
     
     if (personalBtn) personalBtn.addEventListener('click', () => { currentReportType = 'personal'; showReportForm('Relatório Pessoal'); });
-    if (completeBtn) completeBtn.addEventListener('click', () => { currentReportType = 'complete'; showReportForm('Relatório Completo'); });
+    if (completeBtn) {
+        completeBtn.addEventListener('click', () => {
+            if (!hasCompleteReportAccess()) {
+                alert('Você não tem permissão para acessar o Relatório Completo.');
+                return;
+            }
+            currentReportType = 'complete';
+            showReportForm('Relatório Completo');
+        });
+    }
     if (subjectBtn) subjectBtn.addEventListener('click', () => { currentReportType = 'subject'; showReportForm('Relatórios por Assunto'); });
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateReport);
     setupSubjectReportModal();
@@ -1333,6 +1392,10 @@ async function handleGenerateReport() {
     
     if (!startDate || !endDate) return alert('Selecione as datas inicial e final.');
     if (new Date(startDate) > new Date(endDate)) return alert('A data inicial não pode ser maior que a data final.');
+
+    if (currentReportType === 'complete' && !hasCompleteReportAccess()) {
+        return alert('Você não tem permissão para gerar o Relatório Completo.');
+    }
     
     const generateBtn = document.getElementById('generate-report-btn');
     setButtonLoading(generateBtn, true);
@@ -1421,6 +1484,8 @@ function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
 }
 
 function generateCompleteReport(startDate, endDate) {
+    if (!hasCompleteReportAccess()) return;
+
     const usersWithoutAdmin = GLUOS_DATA.usuarios.filter(user => user !== "Admin");
     const startTimestamp = new Date(startDate + 'T00:00:00').getTime();
     const endTimestamp = new Date(endDate + 'T23:59:59').getTime();
@@ -1525,7 +1590,6 @@ function printCompleteReportTable() {
     const tableClone = reportTable.cloneNode(true);
     tableClone.removeAttribute('id');
     tableClone.className = 'print-report-table';
-    // Na impressão, manter os cabeçalhos como texto, sem os controles de ordenação.
     tableClone.querySelectorAll('.report-sort-button').forEach(button => button.replaceWith(button.textContent));
 
     tableClone.querySelectorAll('th, td').forEach(cell => {
@@ -1782,7 +1846,6 @@ function calculateSubjectMonthlyReport(subjectId, year) {
     }));
     const total = rows.reduce((sum, month) => sum + month.count, 0);
     const days = rows.reduce((sum, month) => sum + month.days, 0);
-    // Assim como no modelo enviado, a média anual usa o total / dias do ano.
     return { rows, total, days, average: days > 0 ? total / days : 0 };
 }
 
@@ -2042,9 +2105,14 @@ function showScreen(screenName) {
             const reportForm = document.getElementById('report-form');
             const reportResults = document.getElementById('report-results');
             const printActions = document.getElementById('report-print-actions');
+            const completeReportBtn = document.getElementById('complete-report-btn');
+
             if (reportForm) reportForm.classList.add('hidden');
             if (reportResults) reportResults.classList.add('hidden');
             if (printActions) printActions.classList.add('hidden');
+            if (completeReportBtn) {
+                completeReportBtn.classList.toggle('hidden', !hasCompleteReportAccess());
+            }
             currentReportType = null;
         }
     }
@@ -2062,6 +2130,16 @@ function showScreen(screenName) {
 function updateUserInfo() {
     const userInfo = document.getElementById('user-info');
     if (userInfo) userInfo.textContent = currentUser ? `Usuário: ${currentUser}` : 'Bem-vindo!';
+
+    // Controla a visibilidade do botão de Relatório Completo conforme permissão
+    const completeReportBtn = document.getElementById('complete-report-btn');
+    if (completeReportBtn) {
+        if (hasCompleteReportAccess()) {
+            completeReportBtn.classList.remove('hidden');
+        } else {
+            completeReportBtn.classList.add('hidden');
+        }
+    }
 }
 
 function updateDateTime() {
@@ -2088,7 +2166,7 @@ function updateFirebaseStatus(status, message) {
 
 function updateRecordCount() {
     const totalRecords = document.getElementById('total-records');
-    if (totalRecords) totalRecords.textContent = `${allEntries.length} registro(s)`;
+    if (totalRecords) totalRecords.textContent = `${getPermittedDatabaseEntries().length} registro(s)`;
 }
 
 function formatDateBR(dateString) { return new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR'); }
@@ -2131,7 +2209,6 @@ function initPrazosScreen() {
 
 function calculatePrazos() {
     const processosMap = new Map();
-    // Agrupa todas as entradas pelo numero do processo
     allEntries.forEach(entry => {
         if(!processosMap.has(entry.processNumber)) processosMap.set(entry.processNumber, []);
         processosMap.get(entry.processNumber).push(entry);
@@ -2141,24 +2218,19 @@ function calculatePrazos() {
     const now = new Date();
 
     processosMap.forEach((entries, processNumber) => {
-        // Ordena por data (cronológico)
         entries.sort((a, b) => a.timestamp - b.timestamp);
         
-        // Encontra notificações do processo
-        const notificacoes = entries.filter(e => e.subjectId === 2); // 2 = Notificação de processo
+        const notificacoes = entries.filter(e => e.subjectId === 2);
         if (notificacoes.length === 0) return;
 
-        // Pega a última notificação
         const lastNotificacao = notificacoes[notificacoes.length - 1];
         
-        // Verifica se há deferimento (1) ou indeferimento (6) depois desta notificação
         const hasFinalizationAfter = entries.some(e => 
             (e.subjectId === 1 || e.subjectId === 6) && e.timestamp > lastNotificacao.timestamp
         );
         
         if (hasFinalizationAfter) return;
 
-        // Calcula o prazo em dias (se não foi preenchido, usa 90 por padrão)
         const prazoDias = lastNotificacao.prazo ? parseInt(lastNotificacao.prazo) : 90;
         
         const [day, month, year] = lastNotificacao.date.split('/');
@@ -2167,11 +2239,9 @@ function calculatePrazos() {
         const diaFinal = new Date(notifDate);
         diaFinal.setDate(diaFinal.getDate() + prazoDias);
 
-        // Calcula os dias passados desde a data final calculada
         const diffTime = now.getTime() - diaFinal.getTime();
         const diasFim = Math.floor(diffTime / (1000 * 3600 * 24));
 
-        // Só considera vencido/atrasado se passou do dia
         if (diasFim > 0) {
             allOverdueList.push({
                 ...lastNotificacao,
@@ -2222,7 +2292,6 @@ function sortPrazosData() {
         let valA = a[currentPrazosSort.column];
         let valB = b[currentPrazosSort.column];
 
-        // Lidar com campos de data/número nativos de forma apropriada
         if (currentPrazosSort.column === 'diaFinal') {
             valA = a.diaFinalObj.getTime();
             valB = b.diaFinalObj.getTime();
